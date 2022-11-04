@@ -21,6 +21,11 @@ try:
 except ImportError:
     from urllib2 import urlopen, URLError
 
+try:
+    from subprocess import DEVNULL
+except ImportError:
+    DEVNULL = os.open(os.devnull, os.O_RDWR)
+
 __author__ = 'Daniel Kaiser <d.kasier@fz-juelich.de>'
 
 
@@ -144,7 +149,7 @@ def get_chrome_major_version(chrome_portable=None):
 
 def check_version(binary, required_version):
     try:
-        version = subprocess.check_output([binary, '-v'])
+        version = subprocess.check_output([binary, '-v'], stdin=DEVNULL, stderr=DEVNULL)
         version = re.match(r'.*?([\d.]+).*?', version.decode('utf-8'))[1]
         if version == required_version:
             return True
